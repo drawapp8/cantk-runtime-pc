@@ -21,6 +21,8 @@ public:
 
 	bool readAsText(const char* name, char** ret, int* length);
 
+	string getCwd() const;
+	void setCwd(string cwd);
 private:
 };
 

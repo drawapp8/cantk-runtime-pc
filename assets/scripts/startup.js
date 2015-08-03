@@ -407,14 +407,42 @@ navigator.appVersion = "5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like 
 var location = {};
 location.href = "/";
 location.path = "/";
-location.host = "localhost";
-location.protocol = "http";
+location.pathname = "/";
+location.protocol = "file:";
 location.search = "";
 document.location = location;
 
 window.location = location;
 
 window.fs = new FileSystem();
+
+String.prototype.basename = function(withoutExt) {
+	var filename = this.replace(/\\/g,'/').replace( /.*\//, '' );
+
+	if(withoutExt) {
+		var index = filename.lastIndexOf('.');
+		if(index >= 0) {
+			filename = filename.substr(0, index);
+		}
+	}
+
+	return filename;
+}
+
+String.prototype.extname = function() {	
+	var extName = "";
+	var index = this.lastIndexOf('.');
+
+	if(index >= 0) {
+		extName = this.substr(index+1);	
+	}
+
+	return extName;
+}
+
+String.prototype.dirname = function() {
+	return this.replace(/\\/g,'/').replace(/\/[^\/]*$/, '');
+}
 
 setTimeout(function() {	
 	if(window.onload) {
@@ -423,7 +451,28 @@ setTimeout(function() {
 	window.dispatchEvent({name:"load"});
 }, 0);
 
-//require("./app-cantk.js");
-//require("./app-lwf.js");
-require("./app-test.js");
+function loadURL(url) {
+	var cwd = window.fs.cwd;
+	
+	if(url.indexOf("://") < 0) {
+		url = "file://" + cwd + "/" + url;
+	}
+	
+	var offset = url.indexOf("://");
+	var fileName = url.substr(offset+3);
+
+	var baseName = fileName.basename();
+	var pathName = fileName.dirname();
+
+	window.fs.cwd = pathName;
+	location.host = pathName;
+
+	console.log(location.host);
+	console.log(baseName);
+
+	require(baseName);
+}
+
+//loadURL("app-cantk.js");
+loadURL("app-test.js");
 

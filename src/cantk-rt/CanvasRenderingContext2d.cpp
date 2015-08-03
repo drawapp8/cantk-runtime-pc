@@ -16,6 +16,7 @@
 #include "nanovg_gl.h"
 #include "color_parser.h"
 
+#include <fossa/fossa.h>
 #include "CanvasRenderingContext2d.h"
 
 
@@ -408,12 +409,28 @@ int CanvasRenderingContext2d::deinit() {
 }
 
 bool CanvasRenderingContext2d::loadImage(const string& url, int& id, int& w, int& h) {
-	id = nvgCreateImage(CanvasRenderingContext2d::shareCtx, url.c_str(), 0);
+	int offset = url.find(";base64,");
+	if(offset > 0) {
+		int n = url.length();
+		char* buff = new char[n];
+		const char* data = url.c_str() + offset + 8;
+		int len = base64_decode((unsigned char*)data, n-offset-8, buff); 
+		id = nvgCreateImageMem(CanvasRenderingContext2d::shareCtx, 0, (unsigned char*)buff, len);
+		delete buff;
+	}
+	else {
+		const char* fileName = url.c_str();
+		if(url.find("file://") == 0) {
+			fileName += 7;
+		}
+		id = nvgCreateImage(CanvasRenderingContext2d::shareCtx, fileName, 0);
+	}
 
 	if(id > 0) {
 		nvgImageSize(CanvasRenderingContext2d::shareCtx, id, &w, &h);
 	}
 
+	printf("id=%d w=%d h=%d %s\n", id, w, h, url.c_str());
 	return id > 0;
 }
 

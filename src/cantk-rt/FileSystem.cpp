@@ -1,3 +1,4 @@
+#include <unistd.h>
 #include "FileSystem.h"
 FileSystem::FileSystem(){
 }
@@ -30,6 +31,17 @@ bool FileSystem::readAsText(const char* name, char** ret, int* length) {
   *length = size;
   printf("%d\n", size);
   return true;
+}
+
+string FileSystem::getCwd() const {
+	char cwd[1024] = {0};
+	getcwd(cwd, sizeof(cwd));
+
+	return string(cwd);
+}
+
+void FileSystem::setCwd(string cwd) {
+	chdir(cwd.c_str());
 }
 
 

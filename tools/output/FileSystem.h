@@ -21,7 +21,11 @@ public:
 
 	string readAsText(const char* src);
 
+	string getCwd() const;
+	void setCwd(string cwd);
+
 private:
+	string _cwd;
 };
 
 #endif

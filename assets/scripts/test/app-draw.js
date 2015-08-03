@@ -18,6 +18,9 @@ image.onerror = function(message) {
 
 image.src = "../../assets/images/ball.png";
 
+var imageGround = new Image();
+imageGround.src = "file:///work/lab/cantk/cantk-runtime-pc/assets/scripts/cantk-game/assets/images/ground.png";
+
 function draw() {
 	var ctx = canvas.getContext("2d");
 	ctx.fillStyle = "Green";
@@ -40,6 +43,8 @@ function draw() {
 	ctx.drawImage(image, 0, 0);
 	ctx.drawImage(image, 100, 100, 50, 50);
 	ctx.drawImage(image, 10, 10, 50, 50, 200, 200, 50, 50);
+
+	ctx.drawImage(imageGround, 0, canvas.height-60, canvas.width, 60);
 
 	ctx.font = "sans 36px";
 	ctx.fillStyle = "Gold";

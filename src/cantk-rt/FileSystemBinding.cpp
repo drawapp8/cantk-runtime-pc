@@ -37,6 +37,23 @@ NAN_METHOD(FileSystemReadAsText) {
 }
 
 
+NAN_GETTER(FileSystemGetCwd) {
+	NanScope();
+	FileSystem* obj = ObjectWrap::Unwrap<FileSystem>(args.This());
+	NanReturnValue(NanNew<String>(obj->getCwd()));
+}
+
+NAN_SETTER(FileSystemSetCwd) {
+	NanScope();
+	FileSystem* obj = ObjectWrap::Unwrap<FileSystem>(args.This());
+	if (value->IsString()) {
+		v8::String::Utf8Value nativeValue(value);
+		obj->setCwd(*nativeValue);
+	}else{
+		printf("invalid data type for FileSystem.cwd\n");
+	}
+}
+
 
 static Persistent<FunctionTemplate> constructor;
 void FileSystemInitBinding(Handle<Object> target) {
@@ -47,6 +64,7 @@ void FileSystemInitBinding(Handle<Object> target) {
 	ctor->SetClassName(NanNew("FileSystem"));
 	Local<ObjectTemplate> proto = ctor->PrototypeTemplate();
 	
+	proto->SetAccessor(NanNew("cwd"), FileSystemGetCwd, FileSystemSetCwd);
 
 	NAN_SET_PROTOTYPE_METHOD(ctor, "readAsText", FileSystemReadAsText);
 

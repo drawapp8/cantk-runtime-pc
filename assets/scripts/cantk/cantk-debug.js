@@ -68301,3 +68301,5 @@ UISoundMusic.prototype.setParent = function(parentShape) {
 		setTimeout(window.sendStatistics, 10);
 	}
 
+console.log(location.host);
+
