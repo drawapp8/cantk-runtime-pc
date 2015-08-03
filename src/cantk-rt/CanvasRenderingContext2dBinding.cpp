@@ -463,13 +463,14 @@ NAN_METHOD(CanvasRenderingContext2dArc) {
 	NanScope();
 	CanvasRenderingContext2d* obj = ObjectWrap::Unwrap<CanvasRenderingContext2d>(args.This());
 
-	if(args.Length() == 6) {
+	int argsNr = args.Length();
+	if(argsNr == 5 || argsNr == 6) {
 		double x = args[0]->NumberValue();
 		double y = args[1]->NumberValue();
 		double r = args[2]->NumberValue();
 		double sAngle = args[3]->NumberValue();
 		double eAngle = args[4]->NumberValue();
-		bool counterClockWise = args[5]->BooleanValue();
+		bool counterClockWise = argsNr == 6 ? args[5]->BooleanValue() : false;
 
 		obj->arc(x, y, r, sAngle, eAngle, counterClockWise);
 		NanReturnUndefined();

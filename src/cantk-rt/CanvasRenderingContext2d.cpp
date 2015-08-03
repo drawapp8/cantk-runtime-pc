@@ -31,7 +31,9 @@ CanvasRenderingContext2d::~CanvasRenderingContext2d(){
 
 
 void CanvasRenderingContext2d::stroke() {
-	nvgStroke(ctx);
+	if(_strokeStyle.length() > 0) {
+		nvgStroke(ctx);
+	}
 }
 
 void CanvasRenderingContext2d::fill() {
@@ -431,6 +433,7 @@ bool CanvasRenderingContext2d::loadImage(const string& url, int& id, int& w, int
 	}
 
 	printf("id=%d w=%d h=%d %s\n", id, w, h, url.c_str());
+
 	return id > 0;
 }
 

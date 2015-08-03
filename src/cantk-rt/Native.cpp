@@ -6,6 +6,7 @@
 
 #include "Native.h"
 #include "CanvasBinding.h"
+#include "ScreenBinding.h"
 #include "ImageBinding.h"
 #include "FileSystemBinding.h"
 #include "HttpClientBinding.h"
@@ -27,6 +28,7 @@ void nativeInitBinding(Handle<Object> target) {
 
 	target->Set(NanNew("window"), target);
 
+	ScreenInitBinding(target);
 	ImageInitBinding(target);
 	CanvasInitBinding(target);
 	FileSystemInitBinding(target);
