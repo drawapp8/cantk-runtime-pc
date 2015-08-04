@@ -432,7 +432,9 @@ bool CanvasRenderingContext2d::loadImage(const string& url, int& id, int& w, int
 		nvgImageSize(CanvasRenderingContext2d::shareCtx, id, &w, &h);
 	}
 
-	printf("id=%d w=%d h=%d %s\n", id, w, h, url.c_str());
+	if(url.length() < 1024) {
+		printf("id=%d w=%d h=%d %s\n", id, w, h, url.c_str());
+	}
 
 	return id > 0;
 }

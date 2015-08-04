@@ -14,7 +14,7 @@ window.onload = function() {
         
     cache.loadLWF({
         "lwf": "menu.lwf", // *.lwf file name
-        "prefix": "lwf/flash/menu.lwfdata/", // * lwf, png folder
+        "prefix": "flash/menu.lwfdata/", // * lwf, png folder
         "stage": window.stage, // * target stage
         "onload": function(lwf) {
              window.lwf = lwf;

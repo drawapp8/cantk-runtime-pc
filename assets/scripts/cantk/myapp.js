@@ -387,6 +387,56 @@ var guiData = {
 							},
 							"children": [
 								{
+									"type": "ui-circle",
+									"name": "ui-circle",
+									"w": 73,
+									"h": 72,
+									"x": 194,
+									"y": 42,
+									"text": "",
+									"enable": true,
+									"visible": true,
+									"pivotX": 0.5,
+									"pivotY": 0.5,
+									"xAttr": 0,
+									"yAttr": 0,
+									"widthAttr": 0,
+									"heightAttr": 0,
+									"uid": 16619,
+									"runtimeVisible": true,
+									"density": 1,
+									"friction": 0.5,
+									"restitution": 0.5,
+									"xParam": 1,
+									"yParam": 1,
+									"widthParam": 1,
+									"heightParam": 1,
+									"isUICircle": true,
+									"isUIPhysicsShape": true,
+									"isUIElement": true,
+									"hasChildren": true,
+									"isUIBody": true,
+									"userCustomizable": true,
+									"style": {
+										"lineWidth": 2,
+										"lineColor": "rgba(0,0,0,0)",
+										"fillColor": "rgba(0,0,0,0)",
+										"textColor": "Blue",
+										"fontSize": 15,
+										"fontFamily": "sans"
+									},
+									"events": {
+										"onClick": null,
+										"onBeginContact": null,
+										"onEndContact": null,
+										"onMoved": null
+									},
+									"images": {
+										"display": 4,
+										"default_bg": "cantk-game/assets/images/ball.png"
+									}
+								},
+								{
 									"type": "ui-box",
 									"name": "ui-ground-general",
 									"w": 480,

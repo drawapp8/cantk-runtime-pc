@@ -1,4 +1,3 @@
-
 window.timerID = 0;
 window.tickTime = 0;
 window.timerFuncs = {};
@@ -58,17 +57,7 @@ function tick(t, dt) {
 	tick.deltaTime = dt;
 	window.tickTime = t;
 
-	var arr = window.requestAnimationFrameFuncs;
-	window.requestAnimationFrameFuncs = {};
-	for(var id in arr) {
-		var callback = arr[id];
-		if(callback) {
-			callback.call(window);
-		}
-	}
-	arr.length = 0;
-
-	arr = window.timerFuncs;
+	var arr = window.timerFuncs;
 	window.timerFuncs = {};
 	for(var id in arr) {
 		var info = arr[id];
@@ -88,9 +77,19 @@ function tick(t, dt) {
 		if(info.timeout <= t) {
 			var callback = info.callback;
 			callback.call(window);
-			info.timeout += info.duration;
+			info.timeout = t + info.duration;
 		}
 	}
+	
+	arr = window.requestAnimationFrameFuncs;
+	window.requestAnimationFrameFuncs = {};
+	for(var id in arr) {
+		var callback = arr[id];
+		if(callback) {
+			callback.call(window);
+		}
+	}
+	arr.length = 0;
 
 	return;
 }
@@ -124,36 +123,43 @@ document.createCanvas = function(type) {
 		return this.ctx2d;
 	}
 
-	canvas.addEventListener = function(name, callback, capture) {
-		//TOOD
-	}
-
 	return canvas;
 }
 
 DummyElement = function() {
 	this.style = {};
+	this.childNodes = [];
 }
 
 DummyElement.prototype.appendChild = function(child) {
+	this.childNodes.push(child);
+	child.parentNode = this;
+
 	console.log("appendChild");
 }
 
 DummyElement.prototype.removeChild = function(child) {
 	console.log("removeChild");
+	this.childNodes.remove(child);
 }
 
 document.createElement = function(tag) {
+	var el = null;
 	if(tag === "canvas") {
-		return document.createCanvas();
+		el = document.createCanvas();
 	}
 	else {
-		return new DummyElement();
+		el = new DummyElement();
 	}
+	EventDispatcher.apply(el);
+
+	return el;
 }
 
 document.head = document.createElement('head');
 document.body = document.createElement('body');
+document.body.appendChild(document.createElement('div'));
+document.body.appendChild(document.createElement('div'));
 
 document.getElementById = function(id) {
 	return null;
@@ -179,23 +185,39 @@ document.getViewPort = function(){
 	return {width:480, height:800};
 }
 
+document.styleSheets = [null];
 document.documentElement = {tagName:"HTML", style:{}};
 
 window.document = document;
+
+window.screen = new Screen();
 
 var ACTION_UP = 0;
 var ACTION_DOWN = 1;
 var ACTION_REPEAT = 2;
 var ACTION_MOVE = 3;
 
-window.eventListeners = {};
+function EventDispatcher() {
+}
 
-function addEventListener(name, callback, capture) {
-	var callbacks = window.eventListeners[name];
+EventDispatcher.apply = function(obj) {
+	obj.dispatchEvent = EventDispatcher.prototype.dispatchEvent;
+	obj.addEventListener = EventDispatcher.prototype.addEventListener;
+	obj.removeEventListener = EventDispatcher.prototype.removeEventListener;
 
+	return;
+}
+
+EventDispatcher.prototype.addEventListener = function(name, callback, capture) {
+	if(!this.eventListeners) {
+		this.eventListeners = {};
+	}
+
+	var callbacks = this.eventListeners[name];
+	console.log("addEventListener:" + name);
 	if(!callbacks) {
 		callbacks = [];
-		window.eventListeners[name] = callbacks;
+		this.eventListeners[name] = callbacks;
 	}
 
 	if(callback) {
@@ -205,8 +227,12 @@ function addEventListener(name, callback, capture) {
 	return;
 }
 
-function removeEventListener(name, callback, capture) {
-	var callbacks = window.eventListeners[name];
+EventDispatcher.prototype.removeEventListener = function(name, callback, capture) {
+	if(!this.eventListeners) {
+		return;
+	}
+
+	var callbacks = this.eventListeners[name];
 
 	if(callbacks) {
 		for(var i = 0; i < callbacks.length; i++) {
@@ -220,10 +246,25 @@ function removeEventListener(name, callback, capture) {
 	return;
 }
 
-function dispatchEvent(event) {
+EventDispatcher.prototype.dispatchEvent = function(event) {
 	var name = event.name;
-	var callbacks = window.eventListeners[name];
+	console.log("dispatchEvent:" + name);
 
+	if(event.async) {
+		var me = this;
+		event.async = false;
+		setTimeout(function() {
+			me.dispatchEvent(event);
+		}, 0);
+
+		return;
+	}
+
+	if(!this.eventListeners) {
+		return;
+	}
+	
+	var callbacks = this.eventListeners[name];
 	if(callbacks) {
 		var n = callbacks.length;
 
@@ -250,14 +291,18 @@ function dispatchEvent(event) {
 	return;
 }
 
-window.dispatchEvent = dispatchEvent;
-window.addEventListener = document.addEventListener = addEventListener;
-window.removeEventListener = document.removeEventListener = removeEventListener;
+EventDispatcher.apply(window);
+EventDispatcher.apply(document);
 
+window.dispatchEvent = function(event) {
+	document.dispatchEvent(event);
+	EventDispatcher.prototype.dispatchEvent.call(this, event);
+}
 
 function XMLHttpRequest() {
 	this.requestHeaders = {};
 	this.readyState = XMLHttpRequest.Uninitialized;
+	EventDispatcher.apply(this);
 }
 
 XMLHttpRequest.Uninitialized = 0;
@@ -299,12 +344,14 @@ XMLHttpRequest.prototype.setReadyState = function(readyState) {
 			console.log("parse header failed:" + httpClient.responseHeaders);
 		}
 
+		this.dispatchEvent({name:"load"});
 		this.httpClient = null;
 	}
 
 	if(this.onreadystatechange) {
 		try {
 			this.onreadystatechange();
+			this.dispatchEvent({name:"progress"});
 		}catch(e) {
 			console.log("onreadystatechange:" + e.message);
 		}
@@ -355,7 +402,6 @@ XMLHttpRequest.prototype.sendToLocal = function(body) {
 	this.httpClient.statusText = "200 OK";
 	this.httpClient.responseText = text;
 
-	console.log(text.length);
 	this.setReadyState(XMLHttpRequest.Loaded);
 }
 
@@ -468,11 +514,15 @@ function loadURL(url) {
 	location.host = pathName;
 
 	console.log(location.host);
-	console.log(baseName);
+	console.log(window.fs.cwd);
 
-	require(baseName);
+	require(fileName);
 }
 
+EventDispatcher.apply(Image.prototype);
+
+loadURL("lwf/app-lwf.js");
+//loadURL("pixi/app-pixi.js");
 //loadURL("app-cantk.js");
-loadURL("app-test.js");
+//loadURL("test/app-test.js");
 

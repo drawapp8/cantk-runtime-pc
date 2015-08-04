@@ -1,3 +1,4 @@
+#include <math.h>
 #include "CanvasRenderingContext2d.h"
 
 #include "CanvasRenderingContext2dBinding.h"
@@ -471,6 +472,8 @@ NAN_METHOD(CanvasRenderingContext2dArc) {
 		double sAngle = args[3]->NumberValue();
 		double eAngle = args[4]->NumberValue();
 		bool counterClockWise = argsNr == 6 ? args[5]->BooleanValue() : false;
+		
+		if(fabs(eAngle - sAngle) > 6.28) counterClockWise = true;
 
 		obj->arc(x, y, r, sAngle, eAngle, counterClockWise);
 		NanReturnUndefined();

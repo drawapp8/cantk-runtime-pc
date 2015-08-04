@@ -67,6 +67,7 @@ NAN_SETTER(ImageSetSrc) {
 		v8::String::Utf8Value nativeValue(value);
 		bool ret = obj->setSrc(*nativeValue);
 
+		const char* eventName = "load";
 		Isolate* isolate = args.GetIsolate();
 		Handle<Value> _argv[1];
 		if(ret) {
@@ -86,6 +87,22 @@ NAN_SETTER(ImageSetSrc) {
 				Handle<Function>  onError = Handle<Function>::Cast(onErrorVal);
 				onError->Call(args.This(), 1, _argv);
 			}
+			eventName = "error";
+		}
+			
+		Handle<String> funcName = NanNew("dispatchEvent");
+		Handle<Value> dispatchEventVal = args.This()->Get(funcName);
+		if(dispatchEventVal->IsFunction()) {
+			Handle<Function>  dispatchEvent = Handle<Function>::Cast(dispatchEventVal);
+			Handle<Object> event = NanNew<Object>();
+			event->Set(NanNew("name"), NanNew<String>(eventName));
+			event->Set(NanNew("async"), NanNew<Boolean>(true));
+			_argv[0] = event;
+			dispatchEvent->Call(args.This(), 1, _argv);
+			printf("dispatchEvent call\n");
+		}
+		else {
+			printf("dispatchEvent is not function\n");
 		}
 	}else{
 		printf("invalid data type for Image.src\n");

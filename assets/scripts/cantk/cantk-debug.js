@@ -206,10 +206,6 @@ CantkRT.getViewPort = function() {
 	var width;
 	var height;
 
-	if(document.getViewPort) {
-		return document.getViewPort();
-	}
-
 	if(CantkRT.rt) {
 		return CantkRT.rt.getViewPort();
 	}
@@ -2250,7 +2246,6 @@ window.setStatisticsData = function(data) {
     } else {
         $.md5 = md5;
     }
-    console.log(window.md5);
     window.md5 = md5;
     window.sum = md5;
 }(this));
@@ -2473,7 +2468,7 @@ var gCancelDefaultAction = false;
 
 function canvasAttachManager(canvas, manager, app) {
 	if(!canvas.isNative) {
-//		window.pointer.emitPointers(canvas);
+		window.pointer.emitPointers(canvas);
 	}
 
 	function getEvent(e) {
@@ -2767,6 +2762,7 @@ function canvasAttachManager(canvas, manager, app) {
 	canvas.addEventListener('gesturescale', onGestureScale);
 ///////////////////////////////////////////////////////////////	
 	var gViewPort = cantkGetViewPort();
+	var gScreenHeight = screen.height;
 
 	function handleInputMethodShow() {
 //		console.log("input method show");
@@ -2903,6 +2899,219 @@ function targetIsCanvas(e) {
 	return false;
 }
 
+
+
+/* Modernizr 2.5.3 (Custom Build) | MIT & BSD
+ * Build: http://www.modernizr.com/download/#-touch-teststyles-prefixes
+ */
+
+
+
+window.Modernizr = (function( window, document, undefined ) {
+
+    var version = '2.5.3',
+
+    Modernizr = {},
+
+
+    docElement = document.documentElement,
+
+    mod = 'modernizr',
+    modElem = document.createElement(mod),
+    mStyle = modElem.style,
+
+    inputElem  ,
+
+
+    toString = {}.toString,
+
+    prefixes = ' -webkit- -moz- -o- -ms- '.split(' '),
+
+
+
+    tests = {},
+    inputs = {},
+    attrs = {},
+
+    classes = [],
+
+    slice = classes.slice,
+
+    featureName, 
+
+
+    injectElementWithStyles = function( rule, callback, nodes, testnames ) {
+
+      var style, ret, node,
+          div = document.createElement('div'),
+                body = document.body, 
+                fakeBody = body ? body : document.createElement('body');
+
+      if ( parseInt(nodes, 10) ) {
+                      while ( nodes-- ) {
+              node = document.createElement('div');
+              node.id = testnames ? testnames[nodes] : mod + (nodes + 1);
+              div.appendChild(node);
+          }
+      }
+
+                style = ['&#173;','<style>', rule, '</style>'].join('');
+      div.id = mod;
+          (body ? div : fakeBody).innerHTML += style;
+      fakeBody.appendChild(div);
+      if(!body){
+                fakeBody.style.background = "";
+          docElement.appendChild(fakeBody);
+      }
+
+      ret = callback(div, rule);
+        !body ? fakeBody.parentNode.removeChild(fakeBody) : div.parentNode.removeChild(div);
+
+      return !!ret;
+
+    },
+    _hasOwnProperty = ({}).hasOwnProperty, hasOwnProperty;
+
+    if ( !is(_hasOwnProperty, 'undefined') && !is(_hasOwnProperty.call, 'undefined') ) {
+      hasOwnProperty = function (object, property) {
+        return _hasOwnProperty.call(object, property);
+      };
+    }
+    else {
+      hasOwnProperty = function (object, property) { 
+        return ((property in object) && is(object.constructor.prototype[property], 'undefined'));
+      };
+    }
+
+
+    if (!Function.prototype.bind) {
+      Function.prototype.bind = function bind(that) {
+
+        var target = this;
+
+        if (typeof target != "function") {
+            throw new TypeError();
+        }
+
+        var args = slice.call(arguments, 1),
+            bound = function () {
+
+            if (this instanceof bound) {
+
+              var F = function(){};
+              F.prototype = target.prototype;
+              var self = new F;
+
+              var result = target.apply(
+                  self,
+                  args.concat(slice.call(arguments))
+              );
+              if (Object(result) === result) {
+                  return result;
+              }
+              return self;
+
+            } else {
+
+              return target.apply(
+                  that,
+                  args.concat(slice.call(arguments))
+              );
+
+            }
+
+        };
+
+        return bound;
+      };
+    }
+
+    function setCss( str ) {
+        mStyle.cssText = str;
+    }
+
+    function setCssAll( str1, str2 ) {
+        return setCss(prefixes.join(str1 + ';') + ( str2 || '' ));
+    }
+
+    function is( obj, type ) {
+        return typeof obj === type;
+    }
+
+    function contains( str, substr ) {
+        return !!~('' + str).indexOf(substr);
+    }
+
+
+    function testDOMProps( props, obj, elem ) {
+        for ( var i in props ) {
+            var item = obj[props[i]];
+            if ( item !== undefined) {
+
+                            if (elem === false) return props[i];
+
+                            if (is(item, 'function')){
+                                return item.bind(elem || obj);
+                }
+
+                            return item;
+            }
+        }
+        return false;
+    }
+
+
+    var testBundle = (function( styles, tests ) {
+        var style = styles.join(''),
+            len = tests.length;
+
+        injectElementWithStyles(style, function( node, rule ) {
+            var style = document.styleSheets[document.styleSheets.length - 1],
+                                                    cssText = style ? (style.cssRules && style.cssRules[0] ? style.cssRules[0].cssText : style.cssText || '') : '',
+                children = node.childNodes, hash = {};
+
+            while ( len-- ) {
+                hash[children[len].id] = children[len];
+            }
+
+                       Modernizr['touch'] = ('ontouchstart' in window) || window.DocumentTouch && document instanceof DocumentTouch || (hash['touch'] && hash['touch'].offsetTop) === 9; 
+                                }, len, tests);
+
+    })([
+                       ,['@media (',prefixes.join('touch-enabled),('),mod,')',
+                                '{#touch{top:9px;position:absolute}}'].join('')           ],
+      [
+                       ,'touch'                ]);
+
+
+
+    tests['touch'] = function() {
+        return Modernizr['touch'];
+    };
+
+
+
+    for ( var feature in tests ) {
+        if ( hasOwnProperty(tests, feature) ) {
+                                    featureName  = feature.toLowerCase();
+            Modernizr[featureName] = tests[feature]();
+
+            classes.push((Modernizr[featureName] ? '' : 'no-') + featureName);
+        }
+    }
+    setCss('');
+    modElem = inputElem = null;
+
+
+    Modernizr._version      = version;
+
+    Modernizr._prefixes     = prefixes;
+
+    Modernizr.testStyles    = injectElementWithStyles;
+    return Modernizr;
+
+})(this, this.document);
+;
 
 (function(exports) {
   var MOUSE_ID = 1;
@@ -5213,7 +5422,6 @@ function targetIsCanvas(e) {
 
   // Define globally in case AMD is not available or unused.
   if (typeof window !== 'undefined') {
-  console.log(window.HowlerGlobal);
     window.HowlerGlobal = HowlerGlobal;
     window.Howler = Howler;
     window.Howl = Howl;
@@ -9495,6 +9703,8 @@ WWindowManager.prototype.init = function(app, canvas) {
 	this.lastPointerPoint = {x:0, y:0};
 	this.enablePaint = true;
 	this.beforeDrawHandlers = [];
+	
+	requestAnimFrame(WWindowManager.onDraw);
 
 	return this;
 }
@@ -9841,9 +10051,12 @@ WWindowManager.prototype.setPaintEnable = function(enablePaint) {
 WWindowManager.onDraw = function() {
 	var manager = WWindowManager.getInstance();
 
-	manager.drawCount++;
-	manager.requestCount = 0;
-	manager.draw();
+	if(manager) {
+		manager.drawCount++;
+		manager.requestCount = 0;
+		manager.draw();
+	}
+	requestAnimFrame(WWindowManager.onDraw);
 
 	return;
 }
@@ -9855,7 +10068,7 @@ WWindowManager.prototype.postRedraw = function(rect) {
 	
 	this.requestCount++;
 	if(this.requestCount < 2) {
-		requestAnimFrame(WWindowManager.onDraw);
+//		requestAnimFrame(WWindowManager.onDraw);
 	}
 
 	return;
@@ -11811,6 +12024,7 @@ function CommandHistory() {
 	
 	return;
 }
+(function(){
 
     var root = this;
 	
@@ -11818,7 +12032,7 @@ function CommandHistory() {
 		root.CanTK = {};
 	}
 
-var gCantkBuildDate = "2015年 07月 09日 星期四 20:44:37 CST";console.log("cantk build date: " + gCantkBuildDate);
+var gCantkBuildDate = "2015年 07月 06日 星期一 11:03:19 CST";console.log("cantk build date: " + gCantkBuildDate);
 /*
  * File: webapp.js
  * Author:	Li XianJing <xianjimli@hotmail.com>
@@ -38018,9 +38232,9 @@ UIWindowManager.prototype.initUIWindowManager = function(type) {
 	this.setImage("loading-ui-logo", null);
 	this.setImage("loading-ui-progress-bg", null);
 	this.setImage("loading-ui-progress-fg", null);
-	this.logoImage = ResLoader.loadImage(window.CanTK.config.logoImageSrc);
-	this.progressBarBgImage = ResLoader.loadImage(window.CanTK.config.progressBarBgSrc);
-	this.progressBarFgImage = ResLoader.loadImage(window.CanTK.config.progressBarFgSrc);
+	this.logoImage = ResLoader.loadImage(CanTK.config.logoImageSrc);
+	this.progressBarBgImage = ResLoader.loadImage(CanTK.config.progressBarBgSrc);
+	this.progressBarFgImage = ResLoader.loadImage(CanTK.config.progressBarFgSrc);
 
 	return this;
 }
@@ -52433,8 +52647,9 @@ Physics.createWorld = function(scene) {
 
 	console.log("Box2d:" + velocityIterations + ":" + positionIterations + ":" + fps);
 
-	var timeStep = 1/fps;
+	var timeStep = 1/50;
 	var intervalID = 0;
+	var lastTime = Date.now();
 	function stepIt() {
 		if(scene.world != world) {
 			clearInterval(intervalID);
@@ -52451,6 +52666,9 @@ Physics.createWorld = function(scene) {
 			}
 			Physics.updateBodyElementsPosition(world);
 		}
+
+		console.log(Date.now() - lastTime);
+		lastTime = Date.now();
 
 		return true;
 	}
@@ -54133,6 +54351,141 @@ function UIFrameAnimationCreator() {
 
 ShapeFactoryGet().addShapeCreator(new UIFrameAnimationCreator());
 
+//////////////////////////////////////////////////////////////////////}-{
+function stableSortMerge(array, compare) {
+      function merge(a1, a2) {                       
+        var l1 = a1.length, l2 = a2.length, l = l1 + l2, r = new Array(l);
+        for (var i1 = 0, i2 = 0, i = 0; i < l;) {
+          if (i1 === l1)                          
+            r[i++] = a2[i2++];                                         
+          else if (i2 === l2 || compare(a1[i1], a2[i2]) <= 0)
+            r[i++] = a1[i1++];                     
+          else  
+            r[i++] = a2[i2++];                     
+        }       
+        return r;
+      }         
+      function sort(a) {
+        var l = a.length, m = Math.ceil(l / 2);                        
+        return (l <= 1) ? a : merge(sort(a.slice(0, m)), sort(a.slice(m))); 
+      }     
+      return sort(array);                   
+}
+
+
+
+UIFrameAnimation.prototype.getSupportedImageDisplay = function() {
+	return ["scale", "incenter", "auto"]; 
+}
+
+UIScene.prototype.getSupportedImageDisplay = function() {
+	return ["scale", "incenter", "tile", "vtile", "htile"]; 
+}
+
+UIScene.prototype.setDebug = function(debug) {
+	this.debug = debug;
+
+	return;
+}
+
+UIScene.prototype.beforePaintChildren = function(canvas) {
+	var x = 0;
+	var y = 0;
+	var arr = [];
+	var color = null;
+
+	if(!this.debug && this.mode != Shape.MODE_EDITING) {
+		return;
+	}
+
+	for(var i = 0; i < this.children.length; i++) {
+		var iter = this.children[i];
+		if(!iter.isUIFootprint) {
+			continue;
+		}
+
+		arr.push(iter);
+	}
+
+	stableSortMerge(arr, function(a, b) {
+		if(a.name > b.name) {
+			return 1;
+		}
+
+		if(a.name < b.name) {
+			return -1;
+		}
+		else {
+			return 0;
+		}
+	});
+
+	canvas.lineCap = "round";
+	canvas.lineJoin = "round";
+	canvas.lineWidth = 5;
+	for(var i = 0; i <arr.length; i++) {
+		var iter = arr[i];
+		x = iter.x + (iter.w >> 1);
+		y = iter.y + (iter.h >> 1);
+
+		if(i === 0 || iter.name != arr[i-1].name) {
+			if(i != 0) {
+				canvas.strokeStyle = color;
+				canvas.stroke();
+				canvas.beginPath();
+			}
+
+			canvas.moveTo(x, y);
+			color = iter.style.fillColor;
+		}
+		else {
+			canvas.lineTo(x, y);
+		}
+	}
+	canvas.strokeStyle = color;
+	canvas.stroke();
+
+	return;
+}
+
+UICircle.prototype.getEventNames = function() {
+	var parent = this.getParent();
+	if(parent && (parent.isUISprite || parent.isUISkeletonAnimation || parent.isUITransformAnimation || parent.isUIFrameAnimation)) {
+		return [];
+	}
+	else {
+		return UIElement.prototype.getEventNames.call(this);
+	}
+}
+
+UIBox.prototype.getEventNames = UICircle.prototype.getEventNames;
+UIPolygon.prototype.getEventNames = UICircle.prototype.getEventNames;
+
+UISprite.prototype.getMoreSelectMark = RShape.prototype.getRotateSelectMark;
+UIBox.prototype.getMoreSelectMark = RShape.prototype.getRotateSelectMark;
+UIFrameAnimation.prototype.getMoreSelectMark = RShape.prototype.getRotateSelectMark;
+
+UISoundEffects.prototype.setParent = function(parentShape) {
+	Shape.prototype.setParent.call(this, parentShape);
+
+	var wm = this.getWindowManager();
+	if(wm && !wm.soundEffectURLs) {
+		wm.setSoundEffectURLs("/cantk-game/assets/sound/disappear.mp3");
+	}
+
+	return this;
+}
+
+UISoundMusic.prototype.setParent = function(parentShape) {
+	Shape.prototype.setParent.call(this, parentShape);
+
+	var wm = this.getWindowManager();
+	if(wm && !wm.soundMusicURLs) {
+		wm.setSoundMusicURLs("/cantk-game/assets/sound/bg.mp3");
+	}
+
+	return this;
+}
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -67669,6 +68022,55 @@ window.b2WeldJoint = Box2D.Dynamics.Joints.b2WeldJoint,
 window.b2WeldJointDef = Box2D.Dynamics.Joints.b2WeldJointDef;
 
 /*
+ * File:   weixin-property-sheet.js
+ * Author: Li XianJing <xianjimli@hotmail.com>
+ * Brief:  WeiXin Property Sheet.
+ * 
+ * Copyright (c) 2015 - 2015  Li XianJing <xianjimli@hotmail.com>
+ * 
+ */
+
+UIWeixin.prototype.updateCustomProperties = function(vLayout) {
+	var me = this;
+	var widget = WKeyValue.create(vLayout, 0, 0, 0, 40).addEdit(dappGetTitle("Config URL"), 100, this.configURL);
+	widget.onChanged = function(text) {
+		me.exec(AttributeCommand.create(me, "configURL", null, text));
+	}
+
+	widget = WKeyValue.create(vLayout, 0, 0, 0, 40).addEdit(dappGetTitle("Share Title"), 100, this.shareTitle);
+	widget.onChanged = function(text) {
+		me.exec(AttributeCommand.create(me, "shareTitle", null, text));
+	}
+
+	widget = WKeyValue.create(vLayout, 0, 0, 0, 40).addEdit(dappGetTitle("Share Desc"), 100, this.shareDesc);
+	widget.onChanged = function(text) {
+		me.exec(AttributeCommand.create(me, "shareDesc", null, text));
+	}
+
+	widget = WKeyValue.create(vLayout, 0, 0, 0, 40).addEdit(dappGetTitle("Share Link"), 100, this.shareLink);
+	widget.onChanged = function(text) {
+		me.exec(AttributeCommand.create(me, "shareLink", null, text));
+	}
+	
+	widget = WKeyValue.create(vLayout, 0, 0, 0, 40).addEdit(dappGetTitle("Share Image"), 100, this.shareImage);
+	widget.onChanged = function(text) {
+		me.exec(AttributeCommand.create(me, "shareImage", null, text));
+	}
+	
+	widget = WLabel.create(vLayout, 0, 0, 0, 40).setText(dappGetTitle("Api List")).setTextAlignH("left");
+	widget = WTextArea.create(vLayout, 0, 0, 0, 120).setText(this.apiList ? this.apiList : UIWeixin.jsApiList.join("\n")); 
+	widget.onChanged = function(text) {
+		me.exec(AttributeCommand.create(me, "apiList", null, text));
+	}
+
+	widget = WCheckButton.create(vLayout, 20, 0, 0, 40).setText(dappGetText("Debug")).setValue(this.debug);
+	widget.onChanged = function(value) {
+		me.exec(AttributeCommand.create(me, "debug", null, value));
+	}
+
+	return;
+}
+/*
  * File:   ui-weixin.js
  * Author: Li XianJing <xianjimli@hotmail.com>
  * Brief:  WeiXin Settings/Events
@@ -68027,55 +68429,6 @@ function cantkWeiXinRegisterControls() {
 
 cantkWeiXinRegisterControls();
 
-/*
- * File:   weixin-property-sheet.js
- * Author: Li XianJing <xianjimli@hotmail.com>
- * Brief:  WeiXin Property Sheet.
- * 
- * Copyright (c) 2015 - 2015  Li XianJing <xianjimli@hotmail.com>
- * 
- */
-
-UIWeixin.prototype.updateCustomProperties = function(vLayout) {
-	var me = this;
-	var widget = WKeyValue.create(vLayout, 0, 0, 0, 40).addEdit(dappGetTitle("Config URL"), 100, this.configURL);
-	widget.onChanged = function(text) {
-		me.exec(AttributeCommand.create(me, "configURL", null, text));
-	}
-
-	widget = WKeyValue.create(vLayout, 0, 0, 0, 40).addEdit(dappGetTitle("Share Title"), 100, this.shareTitle);
-	widget.onChanged = function(text) {
-		me.exec(AttributeCommand.create(me, "shareTitle", null, text));
-	}
-
-	widget = WKeyValue.create(vLayout, 0, 0, 0, 40).addEdit(dappGetTitle("Share Desc"), 100, this.shareDesc);
-	widget.onChanged = function(text) {
-		me.exec(AttributeCommand.create(me, "shareDesc", null, text));
-	}
-
-	widget = WKeyValue.create(vLayout, 0, 0, 0, 40).addEdit(dappGetTitle("Share Link"), 100, this.shareLink);
-	widget.onChanged = function(text) {
-		me.exec(AttributeCommand.create(me, "shareLink", null, text));
-	}
-	
-	widget = WKeyValue.create(vLayout, 0, 0, 0, 40).addEdit(dappGetTitle("Share Image"), 100, this.shareImage);
-	widget.onChanged = function(text) {
-		me.exec(AttributeCommand.create(me, "shareImage", null, text));
-	}
-	
-	widget = WLabel.create(vLayout, 0, 0, 0, 40).setText(dappGetTitle("Api List")).setTextAlignH("left");
-	widget = WTextArea.create(vLayout, 0, 0, 0, 120).setText(this.apiList ? this.apiList : UIWeixin.jsApiList.join("\n")); 
-	widget.onChanged = function(text) {
-		me.exec(AttributeCommand.create(me, "apiList", null, text));
-	}
-
-	widget = WCheckButton.create(vLayout, 20, 0, 0, 40).setText(dappGetText("Debug")).setValue(this.debug);
-	widget.onChanged = function(value) {
-		me.exec(AttributeCommand.create(me, "debug", null, value));
-	}
-
-	return;
-}
 if(!window.CanTK) {
 	window.CanTK = {};
 }
@@ -68153,141 +68506,6 @@ CanTK.setResRoot = function(resRoot) {
 	return ResLoader.setResRoot(resRoot);
 }
 
-//////////////////////////////////////////////////////////////////////}-{
-function stableSortMerge(array, compare) {
-      function merge(a1, a2) {                       
-        var l1 = a1.length, l2 = a2.length, l = l1 + l2, r = new Array(l);
-        for (var i1 = 0, i2 = 0, i = 0; i < l;) {
-          if (i1 === l1)                          
-            r[i++] = a2[i2++];                                         
-          else if (i2 === l2 || compare(a1[i1], a2[i2]) <= 0)
-            r[i++] = a1[i1++];                     
-          else  
-            r[i++] = a2[i2++];                     
-        }       
-        return r;
-      }         
-      function sort(a) {
-        var l = a.length, m = Math.ceil(l / 2);                        
-        return (l <= 1) ? a : merge(sort(a.slice(0, m)), sort(a.slice(m))); 
-      }     
-      return sort(array);                   
-}
-
-
-
-UIFrameAnimation.prototype.getSupportedImageDisplay = function() {
-	return ["scale", "incenter", "auto"]; 
-}
-
-UIScene.prototype.getSupportedImageDisplay = function() {
-	return ["scale", "incenter", "tile", "vtile", "htile"]; 
-}
-
-UIScene.prototype.setDebug = function(debug) {
-	this.debug = debug;
-
-	return;
-}
-
-UIScene.prototype.beforePaintChildren = function(canvas) {
-	var x = 0;
-	var y = 0;
-	var arr = [];
-	var color = null;
-
-	if(!this.debug && this.mode != Shape.MODE_EDITING) {
-		return;
-	}
-
-	for(var i = 0; i < this.children.length; i++) {
-		var iter = this.children[i];
-		if(!iter.isUIFootprint) {
-			continue;
-		}
-
-		arr.push(iter);
-	}
-
-	stableSortMerge(arr, function(a, b) {
-		if(a.name > b.name) {
-			return 1;
-		}
-
-		if(a.name < b.name) {
-			return -1;
-		}
-		else {
-			return 0;
-		}
-	});
-
-	canvas.lineCap = "round";
-	canvas.lineJoin = "round";
-	canvas.lineWidth = 5;
-	for(var i = 0; i <arr.length; i++) {
-		var iter = arr[i];
-		x = iter.x + (iter.w >> 1);
-		y = iter.y + (iter.h >> 1);
-
-		if(i === 0 || iter.name != arr[i-1].name) {
-			if(i != 0) {
-				canvas.strokeStyle = color;
-				canvas.stroke();
-				canvas.beginPath();
-			}
-
-			canvas.moveTo(x, y);
-			color = iter.style.fillColor;
-		}
-		else {
-			canvas.lineTo(x, y);
-		}
-	}
-	canvas.strokeStyle = color;
-	canvas.stroke();
-
-	return;
-}
-
-UICircle.prototype.getEventNames = function() {
-	var parent = this.getParent();
-	if(parent && (parent.isUISprite || parent.isUISkeletonAnimation || parent.isUITransformAnimation || parent.isUIFrameAnimation)) {
-		return [];
-	}
-	else {
-		return UIElement.prototype.getEventNames.call(this);
-	}
-}
-
-UIBox.prototype.getEventNames = UICircle.prototype.getEventNames;
-UIPolygon.prototype.getEventNames = UICircle.prototype.getEventNames;
-
-UISprite.prototype.getMoreSelectMark = RShape.prototype.getRotateSelectMark;
-UIBox.prototype.getMoreSelectMark = RShape.prototype.getRotateSelectMark;
-UIFrameAnimation.prototype.getMoreSelectMark = RShape.prototype.getRotateSelectMark;
-
-UISoundEffects.prototype.setParent = function(parentShape) {
-	Shape.prototype.setParent.call(this, parentShape);
-
-	var wm = this.getWindowManager();
-	if(wm && !wm.soundEffectURLs) {
-		wm.setSoundEffectURLs("/cantk-game/assets/sound/disappear.mp3");
-	}
-
-	return this;
-}
-
-UISoundMusic.prototype.setParent = function(parentShape) {
-	Shape.prototype.setParent.call(this, parentShape);
-
-	var wm = this.getWindowManager();
-	if(wm && !wm.soundMusicURLs) {
-		wm.setSoundMusicURLs("/cantk-game/assets/sound/bg.mp3");
-	}
-
-	return this;
-}
 	root.CanTK = CanTK;
 
 	UIElement.prototype.setsd = function(data) {
@@ -68301,5 +68519,4 @@ UISoundMusic.prototype.setParent = function(parentShape) {
 		setTimeout(window.sendStatistics, 10);
 	}
 
-console.log(location.host);
-
+}).call(this);

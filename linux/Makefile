@@ -20,7 +20,7 @@ OBJS=main.o \
 	 utils.o \
 	 HttpClient.o \
 	 HttpClientBinding.o fossa.o V8Wrapper.o \
-	FileSystemBinding.o  FileSystem.o
+	 FileSystemBinding.o  FileSystem.o Screen.o ScreenBinding.o
 
 LIBV8_ROOT=$(V8_SRC)/out/x64.debug/obj.target/tools/gyp
 LIBICU_ROOT=$(V8_SRC)/out/x64.debug/obj.target/third_party/icu

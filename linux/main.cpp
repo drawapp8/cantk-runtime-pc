@@ -29,7 +29,8 @@ static void onMouseMove(GLFWwindow* window, double x, double y) {
 }
 
 typedef struct _AppInfo {
-	int prevt;
+	double lastEventTime;
+	double lastUptateTime;
 	GLFWwindow* window;
 	int width;
 	int height;
@@ -38,7 +39,9 @@ typedef struct _AppInfo {
 
 static void pollEvents(uv_idle_t* handle, int status) {
 	AppInfo* info = (AppInfo*)handle->data;
-	int prevt = info->prevt;
+	double lastEventTime = info->lastEventTime;
+	double lastUptateTime = info->lastUptateTime;
+
 	GLFWwindow* window = info->window;
 
 	glfwPollEvents();
@@ -49,14 +52,21 @@ static void pollEvents(uv_idle_t* handle, int status) {
 		info->shouldQuit = 1;
 		return;
 	}
+	
 	double t, dt;
+	
+	t = glfwGetTime();
+	info->lastEventTime = t;
+	dt = t - lastUptateTime;
+	if(dt < 0.016) {
+	//	return;
+	}
+	info->lastUptateTime = t;
+
+	dt = t - lastEventTime;
+
 	int winWidth, winHeight;
 	int fbWidth, fbHeight;
-
-	t = glfwGetTime();
-	dt = t - prevt;
-	prevt = t;
-
 	glfwGetWindowSize(window, &winWidth, &winHeight);
 	glfwGetFramebufferSize(window, &fbWidth, &fbHeight);
 
@@ -120,7 +130,7 @@ int main(int argc, char** argv)
 	info.height = h;
 	info.window = window;
 	info.shouldQuit = 0;
-	info.prevt = glfwGetTime();
+	info.lastEventTime = glfwGetTime();
 /////////////////////////////////////////////////////
 	V8Wrapper::init(argc, argv);
 	V8Wrapper::resize(w, h);

@@ -1,6 +1,5 @@
-var ctx = new CanvasRenderingContext2d();
-
 var canvas = document.createElement('canvas');
+var ctx = canvas.getContext("2d");
 
 canvas.init(1);
 
@@ -16,10 +15,10 @@ image.onerror = function(message) {
 	console.log(message + ": w=" + this.width + " h=" + this.height + " id=" + this.id + " src=" + this.src);
 }
 
-image.src = "../../assets/images/ball.png";
+image.src = "images/ball.png";
 
 var imageGround = new Image();
-imageGround.src = "file:///work/lab/cantk/cantk-runtime-pc/assets/scripts/cantk-game/assets/images/ground.png";
+imageGround.src = "images/ground.png";
 
 function draw() {
 	var ctx = canvas.getContext("2d");
@@ -49,6 +48,14 @@ function draw() {
 	ctx.font = "sans 36px";
 	ctx.fillStyle = "Gold";
 	ctx.fillText("Hello", 200, 200);
+
+	ctx.beginPath();
+	ctx.arc(470, 90,60, 0, Math.PI * 2);
+	ctx.closePath();
+
+	ctx.fillStyle = "Green";
+	ctx.fill();
+	ctx.stroke();
 
 	window.requestAnimationFrame(draw);
 }

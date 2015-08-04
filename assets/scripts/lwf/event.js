@@ -4,7 +4,7 @@ function onPointerMove(e) {
 }
 
 function onPointerDown(e) {
-	console.log("onPointerDown");
+	console.log("onPointerDown:");
     window.lwf.inputPoint(e.x, e.y);
     window.lwf.inputPress();
 }
