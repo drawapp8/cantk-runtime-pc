@@ -19,7 +19,7 @@
 #include <dirent.h>
 #include <sys/time.h>    
 #include <unistd.h>
-#include "cantk/V8Wrapper.h"
+#include "V8Wrapper.h"
 
 static void graphic_context_resize(int w, int h, int dpi) {
 	glClearDepthf(1.0f);
@@ -48,22 +48,25 @@ static double getTime () {
 }
 
 
-JNIAPI Java_com_tangide_CanvasJNI_surfaceCreated(JNIEnv * env, jobject obj) 
+JNIAPI Java_com_tangide_canvas_CanvasJNI_surfaceCreated(JNIEnv * env, jobject obj) 
 {
-	int argc = 2;
-	char* argv[3] = {"android", "--startup=/mnt/sdcard/cantk-rt/startup.js", NULL};
+	int argc = 3;
+	char* argv[3] = {"android", "--startup=/mnt/sdcard-ext/cantk-rt-v8/scripts/startup.js", NULL};
 
 	prevTime = getTime();
+	LOGI("Java_com_tangide_canvas_CanvasJNI_surfaceCreated");
+
 	V8Wrapper::init(argc, argv);
 }
 
-JNIAPI Java_com_tangide_CanvasJNI_surfaceChanged(JNIEnv * env, jobject obj,  
+JNIAPI Java_com_tangide_canvas_CanvasJNI_surfaceChanged(JNIEnv * env, jobject obj,  
 	jint width, jint height, jint density)
 {
 	V8Wrapper::resize(width, height);
+	LOGI("Java_com_tangide_canvas_CanvasJNI_surfaceChanged");
 }
 
-JNIAPI Java_com_tangide_CanvasJNI_render(JNIEnv * env, jobject obj)
+JNIAPI Java_com_tangide_canvas_CanvasJNI_render(JNIEnv * env, jobject obj)
 {
 	glClearDepthf(1.0f);
     glClearColor(1.0f, 1.0f, 0.0f, 1.0f);

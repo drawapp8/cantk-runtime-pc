@@ -1,0 +1,3 @@
+set solib-search-path /work/lab/cantk/cantk-runtime-pc/android/obj/local/armeabi-v7a
+source /work/android/android-ndk-r10d/prebuilt/common/gdb/common.setup
+directory /work/android/android-ndk-r10d/platforms/android-17/arch-arm/usr/include /work/lab/cantk/cantk-runtime-pc/android/jni/include /work/android/android-ndk-r10d/sources/cxx-stl/stlport/stlport /work/android/android-ndk-r10d/sources/cxx-stl//gabi++/include
