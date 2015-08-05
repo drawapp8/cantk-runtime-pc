@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <string>
+#include <errno.h>
 #include "Native.h"
 #include "V8Wrapper.h"
 #include "CanvasRenderingContext2d.h"
@@ -82,38 +83,41 @@ static void ReportException(Isolate* isolate, TryCatch* try_catch) {
   if (message.IsEmpty()) {
     // V8 didn't provide any extra information about this error; just
     // print the exception.
-    fprintf(stderr, "%s\n", exception_string);
+    LOGE("%s\n", exception_string);
   } else {
     // Print (filename):(line number): (message).
     String::Utf8Value filename(message->GetScriptOrigin().ResourceName());
     const char* filename_string = ToCString(filename);
     int linenum = message->GetLineNumber();
-    fprintf(stderr, "%s:%i: %s\n", filename_string, linenum, exception_string);
+    LOGE("%s:%i: %s\n", filename_string, linenum, exception_string);
     // Print line of source code.
     String::Utf8Value sourceline(message->GetSourceLine());
     const char* sourceline_string = ToCString(sourceline);
-    fprintf(stderr, "%s\n", sourceline_string);
+    LOGE("%s\n", sourceline_string);
     // Print wavy underline (GetUnderline is deprecated).
     int start = message->GetStartColumn();
     for (int i = 0; i < start; i++) {
-      fprintf(stderr, " ");
+      LOGE(" ");
     }
     int end = message->GetEndColumn();
     for (int i = start; i < end; i++) {
-      fprintf(stderr, "^");
+      LOGE("^");
     }
-    fprintf(stderr, "\n");
+    LOGE("\n");
     String::Utf8Value stack_trace(try_catch->StackTrace());
     if (stack_trace.length() > 0) {
       const char* stack_trace_string = ToCString(stack_trace);
-      fprintf(stderr, "%s\n", stack_trace_string);
+      LOGE("%s\n", stack_trace_string);
     }
   }
 }
 
 static Handle<String> ReadFile(Isolate* isolate, const char* name) {
   FILE* file = fopen(name, "rb");
-  if (file == NULL) return Handle<String>();
+  if (file == NULL) {
+	LOGI("open file failed: %s %d\n", name, errno);
+  	return Handle<String>();
+  }
 
   fseek(file, 0, SEEK_END);
   int size = ftell(file);
@@ -158,7 +162,7 @@ static bool ExecuteString(Isolate* isolate, Handle<String> source,
         // the returned value.
         String::Utf8Value str(result);
         const char* cstr = ToCString(str);
-        printf("%s\n", cstr);
+        LOGI("%s\n", cstr);
       }
       return true;
     }
@@ -173,14 +177,13 @@ void Print(const FunctionCallbackInfo<Value>& args) {
     if (first) {
       first = false;
     } else {
-      printf(" ");
+      CONSOLE_LOG(" ");
     }
     String::Utf8Value str(args[i]);
     const char* cstr = ToCString(str);
-    printf("%s", cstr);
+    CONSOLE_LOG("%s", cstr);
   }
-  printf("\n");
-  fflush(stdout);
+  CONSOLE_LOG("\n");
 }
 
 void Load(const v8::FunctionCallbackInfo<v8::Value>& args) {
@@ -225,8 +228,10 @@ Handle<Context> CreateDefaultContext(Isolate* isolate) {
 int RunMain(Isolate* isolate, int argc, char* argv[]) {
 	char cwd[1024] = {0};
 	char fullFileName[1024] = {0};
-	const char* str = getStrOption(argc, argv, "--startup", "assets/scripts/startup.js");
-	
+	const char* str = getStrOption(argc, argv, "--startup=", "assets/scripts/startup.js");
+
+	LOGI("Run: %s\n", str);
+
 	if(str[0] != '/') {
 		getcwd(cwd, sizeof(cwd));
 		snprintf(fullFileName, sizeof(fullFileName)-1, "%s/%s", cwd, str);
@@ -240,7 +245,7 @@ int RunMain(Isolate* isolate, int argc, char* argv[]) {
 	chdir(cwd);
 
 	const char* fileName = last+1;
-	Handle<String> source = ReadFile(isolate, fileName);
+	Handle<String> source = ReadFile(isolate, fullFileName);
 	int result = !ExecuteString(isolate, source, NanNew<String>(fileName), false, true);
 
 	return result;
@@ -256,6 +261,7 @@ V8Wrapper::~V8Wrapper() {
 }
 	
 void V8Wrapper::init(int argc, char* argv[]) {
+	LOGI("V8Wrapper::init:%d\n", argc);
 	V8::InitializeICU();
 	Platform* platform = platform::CreateDefaultPlatform();
 	V8::InitializePlatform(platform);
@@ -264,25 +270,24 @@ void V8Wrapper::init(int argc, char* argv[]) {
 	SimpleArrayBufferAllocator array_buffer_allocator;
 	V8::SetArrayBufferAllocator(&array_buffer_allocator);
 	Isolate* isolate = Isolate::New();
-  //  Isolate::Scope isolate_scope(isolate);
+	
 	isolate->Enter();
     HandleScope handle_scope(isolate);
 	V8Wrapper::sContext = CreateDefaultContext(isolate);
 	V8Wrapper::sContext->Enter();
 
     if (V8Wrapper::sContext.IsEmpty()) {
-      fprintf(stderr, "Error creating context\n");
+      LOGE("Error creating context\n");
       return;
     }
 
-//    Context::Scope context_scope(V8Wrapper::sContext);
 	nativeInitBinding(V8Wrapper::sContext->Global());
 	CanvasRenderingContext2d::init();
 
     RunMain(isolate, argc, argv);
 	Handle<Value> tickVal = V8Wrapper::sContext->Global()->Get(NanNew("tick"));
 	if (!tickVal->IsFunction()) {
-		printf("Error: Script does not declare 'tick' global function.\n");
+		LOGI("Error: Script does not declare 'tick' global function.\n");
 		return;
 	}
 	Handle<Function> tickFunc = Handle<Function>::Cast(tickVal);
@@ -290,7 +295,7 @@ void V8Wrapper::init(int argc, char* argv[]) {
     
 	Handle<Value> dispatchEventVal = V8Wrapper::sContext->Global()->Get(NanNew("dispatchEvent"));
 	if (!dispatchEventVal->IsFunction()) {
-		printf("Error: Script does not declare 'dispatchEvent' global function.\n");
+		LOGI("Error: Script does not declare 'dispatchEvent' global function.\n");
 		return;
 	}
 	Handle<Function> dispatchEventFunc = Handle<Function>::Cast(dispatchEventVal);
@@ -298,6 +303,7 @@ void V8Wrapper::init(int argc, char* argv[]) {
 
 	V8Wrapper::sPlatform = platform;
 	V8Wrapper::sIsolate = isolate;
+	LOGI("V8Wrapper::init done\n");
 }
 
 void V8Wrapper::deinit() {

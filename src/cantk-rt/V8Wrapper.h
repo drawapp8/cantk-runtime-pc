@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <string>
 #include <include/v8.h>
+#include "console.h"
 #include <include/libplatform/libplatform.h>
 
 using namespace std;

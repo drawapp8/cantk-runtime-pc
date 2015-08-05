@@ -521,8 +521,8 @@ function loadURL(url) {
 
 EventDispatcher.apply(Image.prototype);
 
-loadURL("lwf/app-lwf.js");
+//loadURL("lwf/app-lwf.js");
 //loadURL("pixi/app-pixi.js");
 //loadURL("app-cantk.js");
-//loadURL("test/app-test.js");
+loadURL("test/app-test.js");
 

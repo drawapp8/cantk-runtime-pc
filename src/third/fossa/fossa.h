@@ -54,6 +54,7 @@
 #endif
 #define _FILE_OFFSET_BITS 64 /* Enable 64-bit file offsets */
 
+#ifndef ANDROID
 #ifndef BYTE_ORDER
 #define LITTLE_ENDIAN 0x41424344
 #define BIG_ENDIAN 0x44434241
@@ -61,6 +62,7 @@
 /* TODO(lsm): fix for big-endian machines. 'ABCD' is not portable */
 /*#define BYTE_ORDER 'ABCD'*/
 #define BYTE_ORDER LITTLE_ENDIAN
+#endif
 #endif
 
 /*
